@@ -85,7 +85,7 @@ email.__doc__ = """
 Generates a random email address.
 """
 
-similar_email = lambda anon, obj, field, val: '@'.join([anon.faker.username(field=field), val.split('@')[-1]])
+similar_email = lambda anon, obj, field, val: val if 'betterworks.com' in val else '@'.join([anon.faker.username(field=field), val.split('@')[-1]])
 similar_email.__doc__ = """
 Generate a random email address using the same domain.
 """

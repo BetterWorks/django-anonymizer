@@ -1,6 +1,7 @@
 from datetime import datetime
 import decimal
 import random
+import sys
 
 from faker import data
 from faker import Faker
@@ -271,6 +272,12 @@ class Anonymizer(object):
 
     def run(self):
         self.validate()
+        count = self.get_query_set().count()
+        step_size = (count / 100) or 1
+
+        print self.model.__name__
+        index = 0
+        sys.stdout.write('.')
         for obj in self.get_query_set().iterator():
             retval = self.alter_object(obj)
             if retval is not False:
@@ -280,6 +287,12 @@ class Anonymizer(object):
                         continue
                     updates[attname] = getattr(obj, attname)
                 self.get_query_set().filter(pk=obj.pk).update(**updates)
+
+                index += 1
+                if index % step_size == 0:
+                    sys.stdout.write('.')
+                    sys.stdout.flush()
+        print ''
 
     def validate(self):
         attributes = self.get_attributes()
