@@ -84,6 +84,12 @@ email = lambda anon, obj, field, val: anon.faker.email(field=field)
 email.__doc__ = """
 Generates a random email address.
 """
+
+similar_email = lambda anon, obj, field, val: '@'.join([anon.faker.username(field=field), val.split('@')[-1]])
+similar_email.__doc__ = """
+Generate a random email address using the same domain.
+"""
+
 full_address = lambda anon, obj, field, val: anon.faker.full_address(field=field)
 full_address.__doc__ = """
 Generates a random full address, using newline characters between the lines.
