@@ -274,7 +274,12 @@ class Anonymizer(object):
         for obj in self.get_query_set().iterator():
             retval = self.alter_object(obj)
             if retval is not False:
-                obj.save()
+                updates = {}
+                for attname, replacer in self.get_attributes():
+                    if replacer == "SKIP":
+                        continue
+                    updates[attname] = getattr(obj, attname)
+                self.get_query_set().filter(pk=obj.pk).update(**updates)
 
     def validate(self):
         attributes = self.get_attributes()
