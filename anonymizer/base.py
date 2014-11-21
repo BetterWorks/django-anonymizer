@@ -40,7 +40,7 @@ class DjangoFaker(object):
 
     def get_allowed_value(self, source, field):
         retval = source()
-        if field is None:
+        if field is None or retval == '':
             return retval
 
         # Enforce unique.  Ensure we don't set the same values, as either
