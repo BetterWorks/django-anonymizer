@@ -1,12 +1,13 @@
 """
-amonymize_data command
+anonymize_data command
 """
 
-from django.core.exceptions import ImproperlyConfigured
-from django.core.management.base import AppCommand, CommandError
+from django.core.management.base import AppCommand
+from django.db import transaction
 from django.utils import importlib
 
 from anonymizer import Anonymizer
+
 
 class Command(AppCommand):
 
@@ -38,5 +39,6 @@ class Command(AppCommand):
 
         anonymizers.sort(key=lambda c:c.order)
         for a in anonymizers:
-            a().run()
+            with transaction.atomic():
+                a().run()
 
