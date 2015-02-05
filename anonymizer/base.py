@@ -3,6 +3,7 @@ import decimal
 import random
 import sys
 
+from django.db import connection
 from faker import data
 from faker import Faker
 from faker.utils import uk_postcode, bothify
@@ -272,12 +273,15 @@ class Anonymizer(object):
 
     def run(self):
         self.validate()
+        replacer_attr = self.create_replacer_attributes()
+        query = self.create_query(replacer_attr)
         count = self.get_query_set().count()
         step_size = (count / 100) or 1
 
         print self.model.__name__
         index = 0
         sys.stdout.write('.')
+        values = {}
         for obj in self.get_query_set().iterator():
             retval = self.alter_object(obj)
             if retval is not False:
@@ -286,12 +290,16 @@ class Anonymizer(object):
                     if replacer == "SKIP":
                         continue
                     updates[attname] = getattr(obj, attname)
-                self.get_query_set().filter(pk=obj.pk).update(**updates)
+                values[obj.pk] = updates
 
                 index += 1
                 if index % step_size == 0:
                     sys.stdout.write('.')
                     sys.stdout.flush()
+                    query_args = self.create_query_args(values, replacer_attr)
+                    with connection.cursor() as cursor:
+                        cursor.executemany(query, query_args)
+                    values = {}
         print ''
 
     def validate(self):
@@ -308,3 +316,27 @@ class Anonymizer(object):
             if extra_attrs:
                 msg += "The following non-existent fields were supplied: %s." % ", ".join(extra_attrs)
             raise ValueError("The attributes list for %s does not match the complete list of fields for that model. %s" % (self.model.__name__, msg))
+
+    def create_replacer_attributes(self):
+        replacer_attrs = []
+        for attr in self.attributes:
+            if attr[1] != 'SKIP':
+                replacer_attrs.append(attr[0])
+        return replacer_attrs
+
+    def create_query(self, replacer_attrs):
+        query = 'UPDATE %s SET ' % self.model._meta.db_table
+        for attr in replacer_attrs:
+            query += '%s = ?, ' % attr
+        query = query[:-2] + ' where %s = ?' % self.model._meta.pk.column
+        # django expects %s, not ?, but we use %s to generate the query
+        return query.replace('?', '%s')
+
+    def create_query_args(self, updates, replacer_attrs):
+        all_args = []
+        for k, v in updates.iteritems():
+            args = [v[attr] for attr in replacer_attrs]
+            # pk is always the last argument in this query
+            args.append(k)
+            all_args.append(tuple(args))
+        return all_args
