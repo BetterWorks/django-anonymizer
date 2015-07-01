@@ -227,13 +227,13 @@ class Anonymizer(object):
 
     faker = DjangoFaker()
 
-    def get_query_set(self):
+    def get_queryset(self):
         """
         Returns the QuerySet to be manipulated
         """
         if self.model is None:
             raise Exception("'model' attribute must be set")
-        qs = self.model._default_manager.get_query_set()
+        qs = self.model._default_manager.get_queryset()
         if len([f for f in self.model._meta.fields if f.name == 'id']) == 1:
             qs = qs.order_by('id')
         return qs
@@ -275,14 +275,14 @@ class Anonymizer(object):
         self.validate()
         replacer_attr = self.create_replacer_attributes()
         query = self.create_query(replacer_attr)
-        count = self.get_query_set().count()
+        count = self.get_queryset().count()
         step_size = (count / 100) or 1
 
         print self.model.__name__
         index = 0
         sys.stdout.write('.')
         values = {}
-        for obj in self.get_query_set().iterator():
+        for obj in self.get_queryset().iterator():
             retval = self.alter_object(obj)
             if retval is not False:
                 updates = {}
