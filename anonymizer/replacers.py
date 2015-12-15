@@ -135,6 +135,11 @@ lorem.__doc__ = """
 Generates a paragraph of lorem ipsum text
 """
 
+unique_lorem = lambda anon, obj, field, val: anon.faker.unique_lorem(field=field)
+unique_lorem.__doc__ = """
+Generates a unique paragraph of lorem ipsum text
+"""
+
 similar_datetime = lambda anon, obj, field, val: anon.faker.datetime(field=field, val=val)
 similar_datetime.__doc__ = """
 Returns a datetime that is within plus/minus two years of the original datetime

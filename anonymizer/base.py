@@ -10,6 +10,7 @@ from faker.utils import uk_postcode, bothify
 
 from anonymizer import replacers
 from uuid import uuid4
+from collections import defaultdict
 
 randrange = random.SystemRandom().randrange
 
@@ -32,6 +33,7 @@ class DjangoFaker(object):
 
     def __init__(self):
         self.init_values = {}
+        self.unique_suffixes = defaultdict(int)
 
     def _prep_init(self, field):
         if field in self.init_values:
@@ -40,14 +42,14 @@ class DjangoFaker(object):
         field_vals = set(x[0] for x in field.model._default_manager.values_list(field.name))
         self.init_values[field] = field_vals
 
-    def get_allowed_value(self, source, field, force_unique=False):
+    def get_allowed_value(self, source, field):
         retval = source()
         if field is None:
             return retval
 
         # Enforce unique.  Ensure we don't set the same values, as either
         # any of the existing values, or any of the new ones we make up.
-        unique = getattr(field, 'unique', None) or force_unique
+        unique = getattr(field, 'unique', None)
         if unique:
             self._prep_init(field)
             used = self.init_values[field]
@@ -74,7 +76,7 @@ class DjangoFaker(object):
             return str(uuid4())
         return self.get_allowed_value(source, field)
 
-    def varchar(self, field=None, force_unique=False):
+    def varchar(self, field=None):
         """
         Returns a chunk of text, of maximum length 'max_length'
         """
@@ -83,7 +85,7 @@ class DjangoFaker(object):
         def source():
             length = random.choice(range(1, max_length + 1))
             return "".join(random.choice(general_chars) for i in xrange(length))
-        return self.get_allowed_value(source, field, force_unique)
+        return self.get_allowed_value(source, field)
 
     def simple_pattern(self, pattern, field=None):
         """
@@ -150,7 +152,7 @@ class DjangoFaker(object):
         source = lambda: random.choice(data.UK_COUNTRIES)
         return self.get_allowed_value(source, field)
 
-    def lorem(self, field=None, val=None, force_unique=False):
+    def lorem(self, field=None, val=None):
         """
         Returns lorem ipsum text. If val is provided, the lorem ipsum text will
         be the same length as the original text, and with the same pattern of
@@ -175,7 +177,25 @@ class DjangoFaker(object):
                 return "\n".join(parts)
         else:
             source = self.faker.lorem
-        return self.get_allowed_value(source, field, force_unique)
+        return self.get_allowed_value(source, field)
+
+
+    def unique_lorem(self, field=None, val=None):
+        """
+        Returns lorem ipsum text guaranteed to be unique. First uses lorem function
+        then adds a unique integer suffix.
+        """
+        lorem_text = self.lorem(field, val)
+        max_length = getattr(field, 'max_length', None)
+
+        def source():
+            suffix_str = str(self.unique_suffixes[field])
+            unique_text = (lorem_text + suffix_str)[-max_length:]  # take the last max_length chars
+            self.unique_suffixes[field] += 1
+            return unique_text
+
+        return self.get_allowed_value(source, field)
+
 
     def choice(self, field=None):
         assert field is not None, "The field parameter must be passed to the 'choice' method."
