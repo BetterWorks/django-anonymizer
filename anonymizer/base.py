@@ -9,6 +9,7 @@ from faker import Faker
 from faker.utils import uk_postcode, bothify
 
 from anonymizer import replacers
+from uuid import uuid4
 
 randrange = random.SystemRandom().randrange
 
@@ -39,18 +40,18 @@ class DjangoFaker(object):
         field_vals = set(x[0] for x in field.model._default_manager.values_list(field.name))
         self.init_values[field] = field_vals
 
-    def get_allowed_value(self, source, field):
+    def get_allowed_value(self, source, field, force_unique=False):
         retval = source()
-        if field is None or retval == '':
+        if field is None:
             return retval
 
         # Enforce unique.  Ensure we don't set the same values, as either
         # any of the existing values, or any of the new ones we make up.
-        unique = getattr(field, 'unique', None)
+        unique = getattr(field, 'unique', None) or force_unique
         if unique:
             self._prep_init(field)
             used = self.init_values[field]
-            for i in xrange(0, 10):
+            for i in xrange(0, 20):
                 if retval in used:
                     retval = source()
                 else:
@@ -68,17 +69,21 @@ class DjangoFaker(object):
         return retval
 
     ### Public interace ##
+    def uuid(self, field=None):
+        def source():
+            return str(uuid4())
+        return self.get_allowed_value(source, field)
 
-    def varchar(self, field=None):
+    def varchar(self, field=None, force_unique=False):
         """
         Returns a chunk of text, of maximum length 'max_length'
         """
         assert field is not None, "The field parameter must be passed to the 'varchar' method."
         max_length = field.max_length
         def source():
-            length = random.choice(range(0, max_length + 1))
+            length = random.choice(range(1, max_length + 1))
             return "".join(random.choice(general_chars) for i in xrange(length))
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(source, field, force_unique)
 
     def simple_pattern(self, pattern, field=None):
         """
@@ -145,7 +150,7 @@ class DjangoFaker(object):
         source = lambda: random.choice(data.UK_COUNTRIES)
         return self.get_allowed_value(source, field)
 
-    def lorem(self, field=None, val=None):
+    def lorem(self, field=None, val=None, force_unique=False):
         """
         Returns lorem ipsum text. If val is provided, the lorem ipsum text will
         be the same length as the original text, and with the same pattern of
@@ -170,7 +175,7 @@ class DjangoFaker(object):
                 return "\n".join(parts)
         else:
             source = self.faker.lorem
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(source, field, force_unique)
 
     def choice(self, field=None):
         assert field is not None, "The field parameter must be passed to the 'choice' method."

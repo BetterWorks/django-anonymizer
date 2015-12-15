@@ -1,5 +1,10 @@
 # Pre-built replacers.
 
+uuid = lambda anon, obj, field, val: anon.faker.uuid(field=field)
+uuid.__doc__ = """
+Returns a random uuid string
+"""
+
 varchar = lambda anon, obj, field, val: anon.faker.varchar(field=field)
 varchar.__doc__ = """
 Returns random data for a varchar field.
