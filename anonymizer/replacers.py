@@ -1,5 +1,10 @@
 # Pre-built replacers.
 
+uuid = lambda anon, obj, field, val: anon.faker.uuid(field=field)
+uuid.__doc__ = """
+Returns a random uuid string
+"""
+
 varchar = lambda anon, obj, field, val: anon.faker.varchar(field=field)
 varchar.__doc__ = """
 Returns random data for a varchar field.
@@ -128,6 +133,11 @@ Generates a random company name
 lorem = lambda anon, obj, field, val: anon.faker.lorem(field=field)
 lorem.__doc__ = """
 Generates a paragraph of lorem ipsum text
+"""
+
+unique_lorem = lambda anon, obj, field, val: anon.faker.unique_lorem(field=field)
+unique_lorem.__doc__ = """
+Generates a unique paragraph of lorem ipsum text
 """
 
 similar_datetime = lambda anon, obj, field, val: anon.faker.datetime(field=field, val=val)
