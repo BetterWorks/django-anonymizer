@@ -1,16 +1,15 @@
-from datetime import datetime
 import decimal
 import random
 import sys
+from collections import defaultdict
+from datetime import datetime
+from uuid import uuid4
 
 from django.db import connection
-from faker import data
-from faker import Faker
-from faker.utils import uk_postcode, bothify
 
 from anonymizer import replacers
-from uuid import uuid4
-from collections import defaultdict
+from faker import Faker, data
+from faker.utils import bothify, uk_postcode
 
 randrange = random.SystemRandom().randrange
 
@@ -190,7 +189,10 @@ class DjangoFaker(object):
 
         def source():
             suffix_str = str(self.unique_suffixes[field])
-            unique_text = (lorem_text + suffix_str)[-max_length:]  # take the last max_length chars
+            unique_text = lorem_text + suffix_str
+            if max_length is not None:
+                # take the last max_length chars
+                unique_text = unique_text[-max_length:]
             self.unique_suffixes[field] += 1
             return unique_text
 
