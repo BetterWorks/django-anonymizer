@@ -71,9 +71,11 @@ class DjangoFaker(object):
 
     ### Public interace ##
     def uuid(self, field=None):
-        def source():
-            return str(uuid4())
-        return self.get_allowed_value(source, field)
+        retval = str(uuid4())
+        max_length = getattr(field, 'max_length', None)
+        if max_length is not None:
+            retval = retval[:max_length]
+        return retval
 
     def varchar(self, field=None):
         """
@@ -178,7 +180,6 @@ class DjangoFaker(object):
             source = self.faker.lorem
         return self.get_allowed_value(source, field)
 
-
     def unique_lorem(self, field=None, val=None):
         """
         Returns lorem ipsum text guaranteed to be unique. First uses lorem function
@@ -187,17 +188,13 @@ class DjangoFaker(object):
         lorem_text = self.lorem(field, val)
         max_length = getattr(field, 'max_length', None)
 
-        def source():
-            suffix_str = str(self.unique_suffixes[field])
-            unique_text = lorem_text + suffix_str
-            if max_length is not None:
-                # take the last max_length chars
-                unique_text = unique_text[-max_length:]
-            self.unique_suffixes[field] += 1
-            return unique_text
-
-        return self.get_allowed_value(source, field)
-
+        suffix_str = str(self.unique_suffixes[field])
+        unique_text = lorem_text + suffix_str
+        if max_length is not None:
+            # take the last max_length chars
+            unique_text = unique_text[-max_length:]
+        self.unique_suffixes[field] += 1
+        return unique_text
 
     def choice(self, field=None):
         assert field is not None, "The field parameter must be passed to the 'choice' method."
