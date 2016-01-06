@@ -41,4 +41,3 @@ class Command(AppCommand):
         for a in anonymizers:
             with transaction.atomic():
                 a().run()
-

@@ -262,6 +262,17 @@ class Anonymizer(object):
             qs = qs.order_by('id')
         return qs
 
+    def get_queryset_iterator(self, chunksize=1000):
+        queryset = self.get_queryset()
+        num_rows = queryset.count()
+
+        index = 0
+        while index < num_rows:
+            rows = queryset[index:index + chunksize]
+            index += chunksize
+            for row in rows:
+                yield row
+
     def get_attributes(self):
         if self.attributes is None:
             raise Exception("'attributes' attribute must be set")
@@ -306,7 +317,7 @@ class Anonymizer(object):
         index = 0
         sys.stdout.write('.')
         values = {}
-        for obj in self.get_queryset().iterator():
+        for obj in self.get_queryset_iterator():
             retval = self.alter_object(obj)
             if retval is not False:
                 updates = {}
@@ -317,7 +328,7 @@ class Anonymizer(object):
                 values[obj.pk] = updates
 
                 index += 1
-                if index % step_size == 0:
+                if index % step_size == 0 or index == count:
                     sys.stdout.write('.')
                     sys.stdout.flush()
                     query_args = self.create_query_args(values, replacer_attr)
