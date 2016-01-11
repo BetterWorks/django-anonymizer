@@ -1,16 +1,13 @@
 """
 amonymize_data command
 """
-from __future__ import with_statement
 
-import sys
 import os.path
 
-from django.core.exceptions import ImproperlyConfigured
-from django.core.management.base import AppCommand, CommandError
-from django.utils import importlib
-
 from anonymizer import introspect
+from django.core.management.base import AppCommand, CommandError
+
+import importlib
 
 
 class Command(AppCommand):
@@ -21,7 +18,7 @@ class Command(AppCommand):
         mod = importlib.import_module(anonymizers_module_parent)
 
         parent, discard = os.path.split(mod.__file__)  # lop off __init__.pyc
-        path = os.path.join(parent, 'anonymizers.py') # and add anonymizers.
+        path = os.path.join(parent, 'anonymizers.py')  # and add anonymizers.
 
         if os.path.exists(path):
             raise CommandError("File '%s' already exists." % path)

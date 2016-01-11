@@ -2,18 +2,19 @@
 anonymize_data command
 """
 
+from anonymizer import Anonymizer
 from django.core.management.base import AppCommand
 from django.db import transaction
-from django.utils import importlib
 
-from anonymizer import Anonymizer
+import importlib
 
 
 class Command(AppCommand):
 
     def handle_app(self, app, **options):
 
-        anonymizers_module = ".".join(app.__name__.split(".")[:-1] + ["anonymizers"])
+        anonymizers_module = ".".join(
+            app.__name__.split(".")[:-1] + ["anonymizers"])
         mod = importlib.import_module(anonymizers_module)
 
         anonymizers = []
@@ -37,7 +38,7 @@ class Command(AppCommand):
                 v().validate()
                 anonymizers.append(v)
 
-        anonymizers.sort(key=lambda c:c.order)
+        anonymizers.sort(key=lambda c: c.order)
         for a in anonymizers:
             with transaction.atomic():
                 a().run()
