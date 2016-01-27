@@ -11,8 +11,14 @@ import importlib
 
 class Command(AppCommand):
 
-    def handle_app(self, app, **options):
+    def add_arguments(self, parser):
+        parser.add_argument('args', metavar='app_label', nargs='+',
+            help='One or more app names.')
+        parser.add_argument('--chunksize', default=2000, type=int)
 
+
+    def handle_app(self, app, **options):
+        chunksize = options['chunksize']
         anonymizers_module = ".".join(
             app.__name__.split(".")[:-1] + ["anonymizers"])
         mod = importlib.import_module(anonymizers_module)
@@ -41,4 +47,4 @@ class Command(AppCommand):
         anonymizers.sort(key=lambda c: c.order)
         for a in anonymizers:
             with transaction.atomic():
-                a().run()
+                a().run(chunksize)

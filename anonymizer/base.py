@@ -262,7 +262,7 @@ class Anonymizer(object):
             qs = qs.order_by('id')
         return qs
 
-    def get_queryset_iterator(self, chunksize=1000):
+    def get_queryset_iterator(self, chunksize):
         queryset = self.get_queryset()
         num_rows = queryset.count()
 
@@ -306,7 +306,7 @@ class Anonymizer(object):
 
         setattr(obj, attname, replacement)
 
-    def run(self):
+    def run(self, chunksize=2000):
         self.validate()
         replacer_attr = self.create_replacer_attributes()
         query = self.create_query(replacer_attr)
@@ -317,7 +317,7 @@ class Anonymizer(object):
         index = 0
         sys.stdout.write('.')
         values = {}
-        for obj in self.get_queryset_iterator():
+        for obj in self.get_queryset_iterator(chunksize):
             retval = self.alter_object(obj)
             if retval is not False:
                 updates = {}
