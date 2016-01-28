@@ -9,4 +9,3 @@ INSTALLED_APPS = [
     'anonymizer',
     'anonymizer.tests',
 ]
-

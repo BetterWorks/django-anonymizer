@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages, setup
 
 
 def read(*rnames):
@@ -9,7 +10,7 @@ def read(*rnames):
 
 setup(
     name = "django-anonymizer",
-    version = '0.5.0.10-bw',
+    version = '0.5.0.11-bw',
     packages = find_packages(),
     include_package_data = True,
 
@@ -39,5 +40,5 @@ setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Database"
         ],
-    install_requires = ['faker >= 0.0.4-bw'],
+    install_requires = ['faker >= 0.0.4-bw', 'django >= 1.8.0'],
 )

@@ -3,11 +3,11 @@ import random
 import sys
 from collections import defaultdict
 from datetime import datetime
+from multiprocessing import Pool
 from uuid import uuid4
 
-from django.db import connection
-
 from anonymizer import replacers
+from django.db import connection, transaction
 from faker import Faker, data
 from faker.utils import bothify, uk_postcode
 
@@ -22,6 +22,7 @@ for i in range(ord('0'), ord('9')+1):
     alphanumeric += chr(i)
 
 general_chars = alphanumeric + " _-"
+
 
 class DjangoFaker(object):
     """
@@ -257,21 +258,19 @@ class Anonymizer(object):
         """
         if self.model is None:
             raise Exception("'model' attribute must be set")
-        qs = self.model._default_manager.get_queryset()
-        if len([f for f in self.model._meta.fields if f.name == 'id']) == 1:
-            qs = qs.order_by('id')
+        qs = (self.model._default_manager.get_queryset()
+                                         .select_related(None)
+                                         .order_by('pk'))
         return qs
 
-    def get_queryset_iterator(self, chunksize):
+    def get_queryset_chunk_iterator(self, chunksize):
         queryset = self.get_queryset()
         num_rows = queryset.count()
 
         index = 0
         while index < num_rows:
-            rows = queryset[index:index + chunksize]
+            yield queryset[index:index + chunksize]
             index += chunksize
-            for row in rows:
-                yield row
 
     def get_attributes(self):
         if self.attributes is None:
@@ -306,35 +305,27 @@ class Anonymizer(object):
 
         setattr(obj, attname, replacement)
 
-    def run(self, chunksize=2000):
+    def run(self, chunksize=2000, parallel=4):
         self.validate()
-        replacer_attr = self.create_replacer_attributes()
-        query = self.create_query(replacer_attr)
-        count = self.get_queryset().count()
-        step_size = (count / 100) or 1
-
-        print self.model.__name__
-        index = 0
+        print '\n' + self.model.__name__
         sys.stdout.write('.')
-        values = {}
-        for obj in self.get_queryset_iterator(chunksize):
-            retval = self.alter_object(obj)
-            if retval is not False:
-                updates = {}
-                for attname, replacer in self.get_attributes():
-                    if replacer == "SKIP":
-                        continue
-                    updates[attname] = getattr(obj, attname)
-                values[obj.pk] = updates
 
-                index += 1
-                if index % step_size == 0 or index == count:
-                    sys.stdout.write('.')
-                    sys.stdout.flush()
-                    query_args = self.create_query_args(values, replacer_attr)
-                    with connection.cursor() as cursor:
-                        cursor.executemany(query, query_args)
-                    values = {}
+        chunks = self.get_queryset_chunk_iterator(chunksize)
+
+        if parallel == 0:
+            for objs in chunks:
+                _run(self, objs)
+        else:
+            connection.close()
+            pool = Pool(processes=parallel)
+            futures = [pool.apply_async(_run, (self, objs))
+                       for objs in chunks]
+            for future in futures:
+                future.get()
+                sys.stdout.write('.')
+            pool.close()
+            pool.join()
+
         print ''
 
     def validate(self):
@@ -375,3 +366,31 @@ class Anonymizer(object):
             args.append(k)
             all_args.append(tuple(args))
         return all_args
+
+
+def _run(anonymizer, objs):
+    values = {}
+    for obj in objs.iterator():
+        retval = anonymizer.alter_object(obj)
+        if retval is False:
+            continue
+        updates = {}
+        for attname, replacer in anonymizer.get_attributes():
+            if replacer == "SKIP":
+                continue
+            updates[attname] = getattr(obj, attname)
+
+        values[obj.pk] = updates
+
+    replacer_attr = anonymizer.create_replacer_attributes()
+    query = anonymizer.create_query(replacer_attr)
+    query_args = anonymizer.create_query_args(values, replacer_attr)
+
+    with transaction.atomic():
+        with connection.cursor() as cursor:
+            if connection.vendor == 'postgresql':
+                cursor.execute('SET CONSTRAINTS ALL DEFERRED')
+            cursor.executemany(query, query_args)
+
+    sys.stdout.write('.')
+    sys.stdout.flush()

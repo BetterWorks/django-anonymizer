@@ -2,12 +2,11 @@
 amonymize_data command
 """
 
+import importlib
 import os.path
 
 from anonymizer import introspect
 from django.core.management.base import AppCommand, CommandError
-
-import importlib
 
 
 class Command(AppCommand):
