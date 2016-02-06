@@ -1,14 +1,13 @@
 import re
 
 from django.db.models import EmailField
-from django.db.models.loading import get_models
 
 field_replacers = {
     'AutoField': '"SKIP"',
     'ForeignKey': '"SKIP"',
     'ManyToManyField': '"SKIP"',
     'OneToOneField': '"SKIP"',
-    'SlugField': '"SKIP"', # we probably don't want to change slugs
+    'SlugField': '"SKIP"',  # we probably don't want to change slugs
     'DateField': '"date"',
     'DateTimeField': '"datetime"',
     'BooleanField': '"bool"',
@@ -45,6 +44,7 @@ charfield_replacers = [
     (r'(\b|_)address\d*', '"full_address"'),
 ]
 
+
 def get_replacer_for_field(field):
     # Some obvious ones:
     if isinstance(field, EmailField):
@@ -76,7 +76,6 @@ def get_replacer_for_field(field):
         # Just try some random chars
         return '"varchar"'
 
-
     try:
         r = field_replacers[field_type]
     except KeyError:
@@ -95,37 +94,38 @@ class %(modelname)sAnonymizer(Anonymizer):
     ]
 """
 
+
 def create_anonymizer(model):
     attributes = []
-    fields = model._meta.fields
+    fields = list(model._meta.fields)
     # For the faker.name/username/email magic to work as expected and produce
-    # consistent sets of names/email addreses, they must be accessed in the same
-    # order. This will usually not be a problem, but if duplicate names are
-    # produced and the field is unique=True, the logic in DjangoFaker for
+    # consistent sets of names/email addreses, they must be accessed in the
+    # same order. This will usually not be a problem, but if duplicate names
+    # are produced and the field is unique=True, the logic in DjangoFaker for
     # getting new values from the 'source' means that the order will become out
     # of sync. To avoid this, we put fields with 'unique=True' at the beginning
     # of the list. Usually this will only be the username.
-    sort_key = lambda f: not getattr(f, 'unique', False)
-    fields.sort(key=sort_key)
+    fields.sort(key=lambda f: not getattr(f, 'unique', False))
 
     for f in fields:
         replacer = get_replacer_for_field(f)
         attributes.append(attribute_template % {'attname': f.attname,
-                                                'replacer': replacer })
-    return class_template % {'modelname':model.__name__,
-                             'attributes': "\n".join(attributes) }
+                                                'replacer': replacer})
+    return class_template % {'modelname': model.__name__,
+                             'attributes': "\n".join(attributes)}
 
 
-def create_anonymizers_module(app):
+def create_anonymizers_module(app_config):
     model_names = []
     imports = []
     output = []
     output.append("")
     imports.append("from anonymizer import Anonymizer")
-    for model in get_models(app):
+    for model in app_config.models.values():
         model_names.append(model.__name__)
         output.append(create_anonymizer(model))
 
-    imports.insert(0, "from %s import %s" % (app.__name__, ", ".join(model_names)))
+    imports.insert(0, "from %s import %s" % (app_config.models_module.__name__,
+                                             ", ".join(model_names)))
 
     return "\n".join(imports) + "\n".join(output)

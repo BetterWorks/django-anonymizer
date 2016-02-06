@@ -12,16 +12,16 @@ class Command(AppCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('args', metavar='app_label', nargs='+',
-            help='One or more app names.')
+                            help='One or more app names.')
         parser.add_argument('--chunksize', default=2000, type=int)
         parser.add_argument('--parallel', default=4, type=int)
 
-
-    def handle_app(self, app, **options):
+    def handle_app_config(self, app_config, **options):
         chunksize = options['chunksize']
         parallel = options['parallel']
         anonymizers_module = ".".join(
-            app.__name__.split(".")[:-1] + ["anonymizers"])
+            app_config.models_module.__name__.split(".")[:-1] +
+            ["anonymizers"])
         mod = importlib.import_module(anonymizers_module)
 
         anonymizers = []
