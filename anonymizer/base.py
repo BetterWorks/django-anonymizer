@@ -1,6 +1,8 @@
 import decimal
 import random
 import sys
+import six
+
 from collections import defaultdict
 from datetime import datetime
 from multiprocessing import Pool
@@ -295,7 +297,7 @@ class Anonymizer(object):
         """
         currentval = getattr(obj, attname)
         field = obj._meta.get_field_by_name(attname)[0]
-        if isinstance(replacer, str):
+        if isinstance(replacer, six.string_types):
             # 'email' is shortcut for: replacers.email
             replacer = getattr(replacers, replacer)
         elif not callable(replacer):
