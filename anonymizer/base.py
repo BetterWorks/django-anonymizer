@@ -7,6 +7,7 @@ import random
 from faker import data
 from faker import Faker
 from faker.utils import uk_postcode, bothify
+import six
 
 from anonymizer import replacers
 
@@ -261,7 +262,7 @@ class Anonymizer(object):
         """
         currentval = getattr(obj, attname)
         field = obj._meta.get_field_by_name(attname)[0]
-        if isinstance(replacer, str):
+        if isinstance(replacer, six.string_types):
             # 'email' is shortcut for: replacers.email
             replacer = getattr(replacers, replacer)
         elif not callable(replacer):

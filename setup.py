@@ -43,5 +43,6 @@ setup(
         ],
     install_requires = ['faker >= 0.0.4',
                         'Django >= 1.4',
+                        'six >= 1.10.0',
                         ],
 )
