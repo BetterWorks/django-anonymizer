@@ -78,7 +78,7 @@ class TestAnonymizer(TestCase):
     def test_eveything(self):
         # Test for as much as possible in one test.
         assert test_models.EverythingModel.objects.count() == self.NUM_ITEMS
-        assert test_models.EverythingModel._meta.get_field_by_name('username')[0].unique == True
+        assert test_models.EverythingModel._meta.get_field('username').unique is True
 
         class EverythingAnonmyizer(Anonymizer):
             model = test_models.EverythingModel
