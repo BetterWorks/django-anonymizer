@@ -9,23 +9,19 @@ def read(*rnames):
 
 
 setup(
-    name = "django-anonymizer",
-    version = '0.5.0.12-bw',
-    packages = find_packages(),
-    include_package_data = True,
+    name="django-anonymizer",
+    version='0.5.0.12-bw',
+    packages=find_packages(exclude=['*.tests']),
+    include_package_data=True,
 
-    author = "Luke Plant",
-    author_email = "L.Plant.98@cantab.net",
-    url = "https://bitbucket.org/spookylukey/django-anonymizer/",
-    description = "App to anonymize data in Django models.",
-    long_description = (
-                        read('README.rst')
-                        + "\n\n" +
-                        read('CHANGES.rst')
-    ),
-    license = "MIT",
-    keywords = "django data database anonymize private",
-    classifiers = [
+    author="Luke Plant",
+    author_email="L.Plant.98@cantab.net",
+    url="https://bitbucket.org/spookylukey/django-anonymizer/",
+    description="App to anonymize data in Django models.",
+    long_description=(read('README.rst') + "\n\n" + read('CHANGES.rst')),
+    license="MIT",
+    keywords="django data database anonymize private",
+    classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",
         "Environment :: Console",
@@ -40,7 +36,7 @@ setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Database"
         ],
-    install_requires = [
+    install_requires=[
         'faker >= 0.0.4-bw',
         'django >= 1.8.0',
         'six >= 1.10.0'],

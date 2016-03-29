@@ -1,10 +1,6 @@
 from datetime import datetime, timedelta, date
 import decimal
-import os
-import sys
 
-from django.conf import settings
-from django.utils import unittest
 from django.test import TestCase
 from six.moves import xrange
 
@@ -55,6 +51,7 @@ class EverythingModelAnonymizer(Anonymizer):
     ]
 """
         self.assertEqual(mod.strip(), expected.strip())
+
 
 class TestAnonymizer(TestCase):
 
@@ -111,10 +108,11 @@ class TestAnonymizer(TestCase):
         for o in objs:
             # check everything has been changed
             self.assertFalse(o.username.startswith('initial'))
+
             # Check for corresponding user names/emails.  This works if username
             # is first in the list, as recommended and as introspection
             # generates.
             self.assertTrue(o.email.startswith(o.username))
+
             # test for DjangoFaker.choice
             self.assertTrue(o.sex in ('M', 'F'))
-
