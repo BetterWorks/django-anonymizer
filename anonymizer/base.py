@@ -113,7 +113,11 @@ class DjangoFaker(object):
         return self.get_allowed_value(lambda: random.randint(0, 1000000), field)
 
     def small_integer(self, field=None):
+<<<<<<< 9eede2eb301c757c3f4ad799ed978cb181459cce
         return self.get_allowed_value(lambda: random.randint(-32768, 32767), field)
+=======
+        return self.get_allowed_value(lambda: random.randint(-32768, +32767), field)
+>>>>>>> CI PR with everything
 
     def positive_small_integer(self, field=None):
         return self.get_allowed_value(lambda: random.randint(0, 32767), field)

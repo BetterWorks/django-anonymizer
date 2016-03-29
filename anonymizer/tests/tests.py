@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta, date
 import decimal
 
-from django.test import TestCase
 from six.moves import xrange
+
+from django.apps import apps
+from django.test import TestCase
 
 from anonymizer import Anonymizer, introspect
 from anonymizer.tests import models as test_models
@@ -10,8 +12,9 @@ from anonymizer.tests import models as test_models
 
 class TestIntrospect(TestCase):
 
-    def test_eveything(self):
-        mod = introspect.create_anonymizers_module(test_models)
+    def test_introspect(self):
+        config = apps.get_app_config('tests')
+        mod = introspect.create_anonymizers_module(config)
         expected = """
 from anonymizer.tests.models import Other, EverythingModel
 from anonymizer import Anonymizer
@@ -73,7 +76,7 @@ class TestAnonymizer(TestCase):
                                                        price=decimal.Decimal("1.23"),
                                                        )
 
-    def test_eveything(self):
+    def test_anonymizer(self):
         # Test for as much as possible in one test.
         assert test_models.EverythingModel.objects.count() == self.NUM_ITEMS
         assert test_models.EverythingModel._meta.get_field('username').unique is True
@@ -102,7 +105,7 @@ class TestAnonymizer(TestCase):
                 ('price', "decimal"),
             ]
 
-        EverythingAnonmyizer().run()
+        EverythingAnonmyizer().run(parallel=0)
         objs = test_models.EverythingModel.objects.all()
         self.assertEqual(len(objs), self.NUM_ITEMS)
         for o in objs:
