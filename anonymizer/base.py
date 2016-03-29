@@ -96,31 +96,25 @@ class DjangoFaker(object):
         Use a simple pattern to make the field - # is replaced with a random number,
         ? with a random letter.
         """
-        source = lambda: bothify(pattern)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: bothify(pattern), field)
 
     def bool(self, field=None):
         """
         Returns a random boolean
         """
-        source = lambda: bool(randrange(0, 2))
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: bool(randrange(0, 2)), field)
 
     def integer(self, field=None):
-        source = lambda: random.randint(-1000000, 1000000)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.randint(-1000000, 1000000), field)
 
     def positive_integer(self, field=None):
-        source = lambda: random.randint(0, 1000000)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.randint(0, 1000000), field)
 
     def small_integer(self, field=None):
-        source = lambda: random.randint(-32768, +32767)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.randint(-32768, 32767), field)
 
     def positive_small_integer(self, field=None):
-        source = lambda: random.randint(0, 32767)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.randint(0, 32767), field)
 
     def datetime(self, field=None, val=None):
         """
@@ -128,10 +122,12 @@ class DjangoFaker(object):
         years of that date will be returned.
         """
         if val is None:
-            source = lambda: datetime.fromtimestamp(randrange(1, 2100000000))
+            def source():
+                return datetime.fromtimestamp(randrange(1, 2100000000))
         else:
-            source = lambda: datetime.fromtimestamp(int(val.strftime("%s")) +
-                                                    randrange(-365*24*3600*2, 365*24*3600*2))
+            def source():
+                return datetime.fromtimestamp(int(val.strftime("%s")) +
+                                              randrange(-365*24*3600*2, 365*24*3600*2))
         return self.get_allowed_value(source, field)
 
     def date(self, field=None, val=None):
@@ -142,19 +138,18 @@ class DjangoFaker(object):
         return d.date()
 
     def decimal(self, field=None, val=None):
-        source = lambda: decimal.Decimal(random.randrange(0, 100000))/(10**field.decimal_places)
+        def source():
+            return decimal.Decimal(random.randrange(0, 100000))/(10**field.decimal_places)
         return self.get_allowed_value(source, field)
 
     def uk_postcode(self, field=None):
         return self.get_allowed_value(uk_postcode, field)
 
     def uk_county(self, field=None):
-        source = lambda: random.choice(data.UK_COUNTIES)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.choice(data.UK_COUNTIES), field)
 
     def uk_country(self, field=None):
-        source = lambda: random.choice(data.UK_COUNTRIES)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.choice(data.UK_COUNTRIES), field)
 
     def lorem(self, field=None, val=None):
         """
@@ -202,8 +197,7 @@ class DjangoFaker(object):
     def choice(self, field=None):
         assert field is not None, "The field parameter must be passed to the 'choice' method."
         choices = [c[0] for c in field.choices]
-        source = lambda: random.choice(choices)
-        return self.get_allowed_value(source, field)
+        return self.get_allowed_value(lambda: random.choice(choices), field)
 
     ## Other attributes provided by 'Faker':
 
