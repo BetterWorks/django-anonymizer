@@ -6,6 +6,7 @@ import sys
 from django.conf import settings
 from django.utils import unittest
 from django.test import TestCase
+from six.moves import xrange
 
 from anonymizer import Anonymizer, introspect
 from anonymizer.tests import models as test_models

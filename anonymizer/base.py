@@ -3,6 +3,8 @@ import random
 import sys
 import six
 
+from six.moves import xrange
+
 from collections import defaultdict
 from datetime import datetime
 from multiprocessing import Pool
@@ -362,7 +364,7 @@ class Anonymizer(object):
 
     def create_query_args(self, updates, replacer_attrs):
         all_args = []
-        for k, v in updates.iteritems():
+        for k, v in six.iteritems(updates):
             args = [v[attr] for attr in replacer_attrs]
             # pk is always the last argument in this query
             args.append(k)

@@ -40,5 +40,8 @@ setup(
         "Topic :: Software Development :: Testing",
         "Topic :: Database"
         ],
-    install_requires = ['faker >= 0.0.4-bw', 'django >= 1.8.0'],
+    install_requires = [
+        'faker >= 0.0.4-bw',
+        'django >= 1.8.0',
+        'six >= 1.10.0'],
 )
