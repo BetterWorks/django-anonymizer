@@ -351,12 +351,18 @@ class Anonymizer(object):
         return query.replace('?', '%s')
 
     def create_query_args(self, updates, replacer_attrs):
+        pk_field = self.model._meta.pk
+        fields = {attr: self.model._meta.get_field(attr) for attr in replacer_attrs}
+
         all_args = []
         for k, v in six.iteritems(updates):
-            args = [v[attr] for attr in replacer_attrs]
+            args = [fields[attr].get_db_prep_value(v[attr], connection)
+                    for attr in replacer_attrs]
+
             # pk is always the last argument in this query
-            args.append(k)
+            args.append(pk_field.get_db_prep_value(k, connection))
             all_args.append(tuple(args))
+
         return all_args
 
 
