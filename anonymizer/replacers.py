@@ -1,163 +1,228 @@
 # Pre-built replacers.
 
-uuid = lambda anon, obj, field, val: anon.faker.uuid(field=field)
-uuid.__doc__ = """
-Returns a random uuid string
-"""
 
-varchar = lambda anon, obj, field, val: anon.faker.varchar(field=field)
-varchar.__doc__ = """
-Returns random data for a varchar field.
-"""
+def uuid(anon, obj, field, val):
+    """
+    Returns a random uuid string
+    """
+    return anon.faker.uuid(field=field)
 
-bool = lambda anon, obj, field, val: anon.faker.bool(field=field)
-bool.__doc__ = """
-Returns a random boolean value (True/False)
-"""
 
-integer = lambda anon, obj, field, val: anon.faker.integer(field=field)
-integer.__doc__ = """
-Returns a random integer (for a Django IntegerField)
-"""
+def varchar(anon, obj, field, val):
+    """
+    Returns random data for a varchar field.
+    """
+    return anon.faker.varchar(field=field)
 
-positive_integer = lambda anon, obj, field, val: anon.faker.positive_integer(field=field)
-positive_integer.__doc__ = """
-Returns a random positive integer (for a Django PositiveIntegerField)
-"""
 
-small_integer = lambda anon, obj, field, val: anon.faker.small_integer(field=field)
-small_integer.__doc__ = """
-Returns a random small integer (for a Django SmallIntegerField)
-"""
+def bool(anon, obj, field, val):
+    """
+    Returns a random boolean value (True/False)
+    """
+    return anon.faker.bool(field=field)
 
-positive_small_integer = lambda anon, obj, field, val: anon.faker.positive_small_integer(field=field)
-positive_small_integer.__doc__ = """
-Returns a positive small random integer (for a Django PositiveSmallIntegerField)
-"""
 
-datetime = lambda anon, obj, field, val: anon.faker.datetime(field=field)
-datetime.__doc__ = """
-Returns a random datetime
-"""
+def integer(anon, obj, field, val):
+    """
+    Returns a random integer (for a Django IntegerField)
+    """
+    return anon.faker.integer(field=field)
 
-date = lambda anon, obj, field, val: anon.faker.date(field=field)
-date.__doc__ = """
-Returns a random date
-"""
 
-decimal = lambda anon, obj, field, val: anon.faker.decimal(field=field)
-decimal.__doc__ = """
-Returns a random decimal
-"""
+def positive_integer(anon, obj, field, val):
+    """
+    Returns a random positive integer (for a Django PositiveIntegerField)
+    """
+    return anon.faker.positive_integer(field=field)
 
-uk_postcode = lambda anon, obj, field, val: anon.faker.uk_postcode(field=field)
-uk_postcode.__doc__ = """
-Generates a random UK postcode (not necessarily valid, but it will look like one).
-"""
 
-uk_country = lambda anon, obj, field, val: anon.faker.uk_country(field=field)
-uk_country.__doc__ = """
-Returns a randomly selected country that is part of the UK
-"""
+def small_integer(anon, obj, field, val):
+    """
+    Returns a random small integer (for a Django SmallIntegerField)
+    """
+    return anon.faker.small_integer(field=field)
 
-uk_county = lambda anon, obj, field, val: anon.faker.uk_county(field=field)
-uk_county.__doc__ = """
-Returns a randomly selected county from the UK
-"""
 
-username = lambda anon, obj, field, val: anon.faker.username(field=field)
-username.__doc__ = """
-Generates a random username
-"""
+def positive_small_integer(anon, obj, field, val):
+    """
+    Returns a positive small random integer (for a Django PositiveSmallIntegerField)
+    """
+    return anon.faker.positive_small_integer(field=field)
 
-first_name = lambda anon, obj, field, val: anon.faker.first_name(field=field)
-first_name.__doc__ = """
-Returns a random first name
-"""
 
-last_name = lambda anon, obj, field, val: anon.faker.last_name(field=field)
-last_name.__doc__ = """
-Returns a random second name
-"""
+def datetime(anon, obj, field, val):
+    """
+    Returns a random datetime
+    """
+    return anon.faker.datetime(field=field)
 
-name = lambda anon, obj, field, val: anon.faker.name(field=field)
-name.__doc__ = """
-Generates a random full name (using first name and last name)
-"""
 
-email = lambda anon, obj, field, val: anon.faker.email(field=field)
-email.__doc__ = """
-Generates a random email address.
-"""
+def date(anon, obj, field, val):
+    """
+    Returns a random date
+    """
+    return anon.faker.date(field=field)
 
-similar_email = lambda anon, obj, field, val: val if 'betterworks.com' in val else '@'.join([anon.faker.username(field=field), val.split('@')[-1]])
-similar_email.__doc__ = """
-Generate a random email address using the same domain.
-"""
 
-full_address = lambda anon, obj, field, val: anon.faker.full_address(field=field)
-full_address.__doc__ = """
-Generates a random full address, using newline characters between the lines.
-Resembles a US address
-"""
-phonenumber = lambda anon, obj, field, val: anon.faker.phonenumber(field=field)
-phonenumber.__doc__ = """
-Generates a random US-style phone number
-"""
+def decimal(anon, obj, field, val):
+    """
+    Returns a random decimal
+    """
+    return anon.faker.decimal(field=field)
 
-street_address = lambda anon, obj, field, val: anon.faker.street_address(field=field)
-street_address.__doc__ = """
-Generates a random street address - the first line of a full address
-"""
 
-city = lambda anon, obj, field, val: anon.faker.city(field=field)
-city.__doc__ = """
-Generates a random city name. Resembles the name of US/UK city.
-"""
+def uk_postcode(anon, obj, field, val):
+    """
+    Generates a random UK postcode (not necessarily valid, but it will look like one).
+    """
+    return anon.faker.uk_postcode(field=field)
 
-state = lambda anon, obj, field, val: anon.faker.state(field=field)
-state.__doc__ = """
-Returns a randomly selected US state code
-"""
 
-zip_code = lambda anon, obj, field, val: anon.faker.zip_code(field=field)
-zip_code.__doc__ = """
-Returns a randomly generated US zip code (not necessarily valid, but will look like one).
-"""
+def uk_country(anon, obj, field, val):
+    """
+    Returns a randomly selected country that is part of the UK
+    """
+    return anon.faker.uk_country(field=field)
 
-company = lambda anon, obj, field, val: anon.faker.company(field=field)
-company.__doc__ = """
-Generates a random company name
-"""
 
-lorem = lambda anon, obj, field, val: anon.faker.lorem(field=field)
-lorem.__doc__ = """
-Generates a paragraph of lorem ipsum text
-"""
+def uk_county(anon, obj, field, val):
+    """
+    Returns a randomly selected county from the UK
+    """
+    return anon.faker.uk_county(field=field)
 
-unique_lorem = lambda anon, obj, field, val: anon.faker.unique_lorem(field=field)
-unique_lorem.__doc__ = """
-Generates a unique paragraph of lorem ipsum text
-"""
 
-similar_datetime = lambda anon, obj, field, val: anon.faker.datetime(field=field, val=val)
-similar_datetime.__doc__ = """
-Returns a datetime that is within plus/minus two years of the original datetime
-"""
+def username(anon, obj, field, val):
+    """
+    Generates a random username
+    """
+    return anon.faker.username(field=field)
 
-similar_date = lambda anon, obj, field, val: anon.faker.date(field=field, val=val)
-similar_date.__doc__ = """
-Returns a date that is within plus/minus two years of the original date
-"""
 
-similar_lorem = lambda anon, obj, field, val: anon.faker.lorem(field=field, val=val)
-similar_lorem.__doc__ = """
-Generates lorem ipsum text with the same length and same pattern of linebreaks
-as the original. If the original often takes a standard form (e.g. a single word
-'yes' or 'no'), this could easily fail to hide the original data.
-"""
+def first_name(anon, obj, field, val):
+    """
+    Returns a random first name
+    """
+    return anon.faker.first_name(field=field)
 
-choice = lambda anon, obj, field, val: anon.faker.choice(field=field)
-choice.__doc__ = """
-Randomly chooses one of the choices set on the field.
-"""
+
+def last_name(anon, obj, field, val):
+    """
+    Returns a random second name
+    """
+    return anon.faker.last_name(field=field)
+
+
+def name(anon, obj, field, val):
+    """
+    Generates a random full name (using first name and last name)
+    """
+    return anon.faker.name(field=field)
+
+
+def email(anon, obj, field, val):
+    """
+    Generates a random email address.
+    """
+    return anon.faker.email(field=field)
+
+
+def similar_email(anon, obj, field, val):
+    """
+    Generate a random email address using the same domain.
+    """
+    return val if 'betterworks.com' in val else '@'.join([anon.faker.username(field=field), val.split('@')[-1]])
+
+
+def full_address(anon, obj, field, val):
+    """
+    Generates a random full address, using newline characters between the lines.
+    Resembles a US address
+    """
+    return anon.faker.full_address(field=field)
+
+
+def phonenumber(anon, obj, field, val):
+    """
+    Generates a random US-style phone number
+    """
+    return anon.faker.phonenumber(field=field)
+
+
+def street_address(anon, obj, field, val):
+    """
+    Generates a random street address - the first line of a full address
+    """
+    return anon.faker.street_address(field=field)
+
+
+def city(anon, obj, field, val):
+    """
+    Generates a random city name. Resembles the name of US/UK city.
+    """
+    return anon.faker.city(field=field)
+
+
+def state(anon, obj, field, val):
+    """
+    Returns a randomly selected US state code
+    """
+    return anon.faker.state(field=field)
+
+
+def zip_code(anon, obj, field, val):
+    """
+    Returns a randomly generated US zip code (not necessarily valid, but will look like one).
+    """
+    return anon.faker.zip_code(field=field)
+
+
+def company(anon, obj, field, val):
+    """
+    Generates a random company name
+    """
+    return anon.faker.company(field=field)
+
+
+def lorem(anon, obj, field, val):
+    """
+    Generates a paragraph of lorem ipsum text
+    """
+    return anon.faker.lorem(field=field)
+
+
+def unique_lorem(anon, obj, field, val):
+    """
+    Generates a unique paragraph of lorem ipsum text
+    """
+    return anon.faker.unique_lorem(field=field)
+
+
+def similar_datetime(anon, obj, field, val):
+    """
+    Returns a datetime that is within plus/minus two years of the original datetime
+    """
+    return anon.faker.datetime(field=field, val=val)
+
+
+def similar_date(anon, obj, field, val):
+    """
+    Returns a date that is within plus/minus two years of the original date
+    """
+    return anon.faker.date(field=field, val=val)
+
+
+def similar_lorem(anon, obj, field, val):
+    """
+    Generates lorem ipsum text with the same length and same pattern of linebreaks
+    as the original. If the original often takes a standard form (e.g. a single word
+    'yes' or 'no'), this could easily fail to hide the original data.
+    """
+    return anon.faker.lorem(field=field, val=val)
+
+
+def choice(anon, obj, field, val):
+    """
+    Randomly chooses one of the choices set on the field.
+    """
+    return anon.faker.choice(field=field)
