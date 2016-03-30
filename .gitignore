@@ -2,3 +2,4 @@
 *.pyo
 /.tox
 /*.egg-info
+/.coverage

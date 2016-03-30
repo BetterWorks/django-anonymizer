@@ -2,6 +2,9 @@
  Django Anonymizer
 ===================
 
+.. image:: https://codecov.io/github/BetterWorks/django-anonymizer/coverage.svg?branch=master
+    :target: https://codecov.io/github/BetterWorks/django-anonymizer?branch=master
+
 Downloads: http://pypi.python.org/pypi/django-anonymizer
 
 Intro
