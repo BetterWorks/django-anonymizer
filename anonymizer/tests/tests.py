@@ -10,6 +10,24 @@ from anonymizer import Anonymizer, introspect
 from anonymizer.tests import models as test_models
 
 
+import cProfile
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def profile(filename):
+    yield
+    return
+    pr = cProfile.Profile()
+    pr.enable()
+
+    yield
+
+    pr.disable()
+    pr.dump_stats(filename)
+
+
 class TestIntrospect(TestCase):
 
     def test_introspect(self):
@@ -113,7 +131,9 @@ class TestAnonymizer(TestCase):
                 ('custom', lambda anon, obj, field, val: 'bar-%s' % obj.id),
             ]
 
-        EverythingAnonmyizer().run(parallel=0)
+        with profile('anon.prof'):
+            EverythingAnonmyizer().run(parallel=0)
+
         objs = test_models.EverythingModel.objects.all()
         self.assertEqual(len(objs), self.NUM_ITEMS)
         for o in objs:
