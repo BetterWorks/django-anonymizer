@@ -1,6 +1,5 @@
 import decimal
 import random
-import sys
 import six
 
 from six.moves import xrange
@@ -305,8 +304,6 @@ class Anonymizer(object):
 
     def run(self, chunksize=2000, parallel=4):
         self.validate()
-        print '\n' + self.model.__name__
-        sys.stdout.write('.')
 
         chunks = self.get_queryset_chunk_iterator(chunksize)
 
@@ -320,11 +317,8 @@ class Anonymizer(object):
                        for objs in chunks]
             for future in futures:
                 future.get()
-                sys.stdout.write('.')
             pool.close()
             pool.join()
-
-        print ''
 
     def validate(self):
         attributes = self.get_attributes()
@@ -389,6 +383,3 @@ def _run(anonymizer, objs):
             if connection.vendor == 'postgresql':
                 cursor.execute('SET CONSTRAINTS ALL DEFERRED')
             cursor.executemany(query, query_args)
-
-    sys.stdout.write('.')
-    sys.stdout.flush()
