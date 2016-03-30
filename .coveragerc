@@ -1,0 +1,7 @@
+[run]
+branch = True
+data_file = .coverage
+omit =
+  manage.py
+  setup.py
+  anonymizer/tests/*
