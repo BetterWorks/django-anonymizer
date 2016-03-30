@@ -42,7 +42,7 @@ class DjangoFaker(object):
         if field in self.init_values:
             return
 
-        field_vals = set(x[0] for x in field.model._default_manager.values_list(field.name))
+        field_vals = set(field.model._default_manager.values_list(field.name, flat=True).iterator())
         self.init_values[field] = field_vals
 
     def get_allowed_value(self, source, field):
@@ -50,7 +50,7 @@ class DjangoFaker(object):
         if field is None:
             return retval
 
-        # Enforce unique.  Ensure we don't set the same values, as either
+        # Enforce unique. Ensure we don't set the same values, as either
         # any of the existing values, or any of the new ones we make up.
         unique = getattr(field, 'unique', None)
         if unique:
@@ -336,11 +336,7 @@ class Anonymizer(object):
             raise ValueError("The attributes list for %s does not match the complete list of fields for that model. %s" % (self.model.__name__, msg))
 
     def create_replacer_attributes(self):
-        replacer_attrs = []
-        for attr in self.attributes:
-            if attr[1] != 'SKIP':
-                replacer_attrs.append(attr[0])
-        return replacer_attrs
+        return tuple(name for name, replacer in self.get_attributes() if replacer != 'SKIP')
 
     def create_query(self, replacer_attrs):
         query = 'UPDATE %s SET ' % self.model._meta.db_table
@@ -368,19 +364,14 @@ class Anonymizer(object):
 
 def _run(anonymizer, objs):
     values = {}
+    replacer_attr = anonymizer.create_replacer_attributes()
     for obj in objs.iterator():
         retval = anonymizer.alter_object(obj)
         if retval is False:
             continue
-        updates = {}
-        for attname, replacer in anonymizer.get_attributes():
-            if replacer == "SKIP":
-                continue
-            updates[attname] = getattr(obj, attname)
 
-        values[obj.pk] = updates
+        values[obj.pk] = {attname: getattr(obj, attname) for attname in replacer_attr}
 
-    replacer_attr = anonymizer.create_replacer_attributes()
     query = anonymizer.create_query(replacer_attr)
     query_args = anonymizer.create_query_args(values, replacer_attr)
 
