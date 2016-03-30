@@ -73,7 +73,7 @@ class DjangoFaker(object):
 
         return retval
 
-    ### Public interace ##
+    # Public interface
     def uuid(self, field=None):
         retval = str(uuid4())
         max_length = getattr(field, 'max_length', None)
@@ -87,6 +87,7 @@ class DjangoFaker(object):
         """
         assert field is not None, "The field parameter must be passed to the 'varchar' method."
         max_length = field.max_length
+
         def source():
             length = random.choice(range(1, max_length + 1))
             return "".join(random.choice(general_chars) for i in xrange(length))
@@ -200,8 +201,7 @@ class DjangoFaker(object):
         choices = [c[0] for c in field.choices]
         return self.get_allowed_value(lambda: random.choice(choices), field)
 
-    ## Other attributes provided by 'Faker':
-
+    # Other attributes provided by 'Faker':
     # username
     # first_name
     # last_name
@@ -323,7 +323,7 @@ class Anonymizer(object):
     def validate(self):
         attributes = self.get_attributes()
         model_attrs = set(f.attname for f in self.model._meta.fields)
-        given_attrs = set(name for name,replacer in attributes)
+        given_attrs = set(name for name, replacer in attributes)
         if model_attrs != given_attrs:
             msg = ""
             missing_attrs = model_attrs - given_attrs
