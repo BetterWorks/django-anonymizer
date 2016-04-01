@@ -16,7 +16,9 @@ setup(
 
     author="Luke Plant",
     author_email="L.Plant.98@cantab.net",
-    url="https://bitbucket.org/spookylukey/django-anonymizer/",
+    maintainer="David Stensland",
+    maintainer_email="anonymizer@terite.com",
+    url="https://github.com/betterworks/django-anonymizer",
     description="App to anonymize data in Django models.",
     long_description=(read('README.rst') + "\n\n" + read('CHANGES.rst')),
     license="MIT",
