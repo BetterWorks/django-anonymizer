@@ -1,18 +1,16 @@
 import decimal
 import random
-import six
-
-from six.moves import xrange
-
 from collections import defaultdict
 from datetime import datetime
 from multiprocessing import Pool
 from uuid import uuid4
 
+import six
 from anonymizer import replacers
 from django.db import connection, transaction
-from faker import Faker, data
-from faker.utils import bothify, uk_postcode
+from faker import Faker
+
+from six.moves import xrange
 
 randrange = random.SystemRandom().randrange
 
@@ -73,13 +71,9 @@ class DjangoFaker(object):
 
         return retval
 
-    # Public interface
     def uuid(self, field=None):
-        retval = str(uuid4())
-        max_length = getattr(field, 'max_length', None)
-        if max_length is not None:
-            retval = retval[:max_length]
-        return retval
+        # bypass chopping from max_length
+        return str(uuid4())
 
     def varchar(self, field=None):
         """
@@ -98,7 +92,7 @@ class DjangoFaker(object):
         Use a simple pattern to make the field - # is replaced with a random number,
         ? with a random letter.
         """
-        return self.get_allowed_value(lambda: bothify(pattern), field)
+        return self.get_allowed_value(lambda: self.faker.bothify(pattern), field)
 
     def bool(self, field=None):
         """
@@ -144,14 +138,11 @@ class DjangoFaker(object):
             return decimal.Decimal(random.randrange(0, 100000))/(10**field.decimal_places)
         return self.get_allowed_value(source, field)
 
-    def uk_postcode(self, field=None):
-        return self.get_allowed_value(uk_postcode, field)
+    def postcode(self, field=None):
+        return self.get_allowed_value(self.faker.postcode, field)
 
-    def uk_county(self, field=None):
-        return self.get_allowed_value(lambda: random.choice(data.UK_COUNTIES), field)
-
-    def uk_country(self, field=None):
-        return self.get_allowed_value(lambda: random.choice(data.UK_COUNTRIES), field)
+    def country(self, field=None):
+        return self.get_allowed_value(self.faker.country, field)
 
     def lorem(self, field=None, val=None):
         """
@@ -164,7 +155,7 @@ class DjangoFaker(object):
                 # Get lorem ipsum of a specific length.
                 collect = ""
                 while len(collect) < length:
-                    collect += self.faker.lorem()
+                    collect += ' %s' % self.faker.sentence()
                 collect = collect[:length]
                 return collect
 
@@ -177,7 +168,8 @@ class DjangoFaker(object):
                     parts[i] = generate(len(p))
                 return "\n".join(parts)
         else:
-            source = self.faker.lorem
+            def source():
+                return ' '.join(self.faker.sentences())
         return self.get_allowed_value(source, field)
 
     def unique_lorem(self, field=None, val=None):
@@ -202,12 +194,12 @@ class DjangoFaker(object):
         return self.get_allowed_value(lambda: random.choice(choices), field)
 
     # Other attributes provided by 'Faker':
-    # username
+    # user_name
     # first_name
     # last_name
     # name
     # email
-    # full_address
+    # address
     # phonenumber
     # street_address
     # city

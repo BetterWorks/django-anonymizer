@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 
 
@@ -9,12 +11,11 @@ class EverythingModel(models.Model):
     name = models.CharField(max_length=30)
     email = models.EmailField()
     username = models.CharField(max_length=20, unique=True)
-    address_city = models.CharField(max_length=50)
-    address_post_code = models.CharField(max_length=10)
     address = models.TextField()
     o1 = models.ForeignKey(Other)
-    something = models.TextField()
-    something_else = models.TextField()
+    lorem = models.TextField()
+    similar_lorem = models.TextField()
+    unique_lorem = models.TextField(unique=True)
     some_varchar = models.CharField(max_length=5)
     birthday = models.DateTimeField()
     age = models.PositiveSmallIntegerField()
@@ -25,3 +26,20 @@ class EverythingModel(models.Model):
                                                   ('F', 'Female')])
     price = models.DecimalField(decimal_places=2, max_digits=10)
     binary = models.BinaryField()
+    uuid = models.UUIDField(default=uuid.uuid4)
+    boolean = models.BooleanField()
+    small_integer = models.SmallIntegerField()
+    positive_small_integer = models.PositiveSmallIntegerField()
+    postcode = models.CharField(max_length=9)
+    country = models.CharField(max_length=45)
+    first_name = models.CharField(max_length=5)
+    last_name = models.CharField(max_length=5)
+    similar_email = models.EmailField()
+    phonenumber = models.CharField(max_length=10)
+    last_name = models.CharField(max_length=11)
+    street_address = models.CharField(max_length=15)
+    state = models.CharField(max_length=2)
+    zip_code = models.CharField(max_length=9)
+    company = models.CharField(max_length=30)
+    similar_datetime = models.DateTimeField()
+    similar_date = models.DateField()

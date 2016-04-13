@@ -71,32 +71,25 @@ def decimal(anon, obj, field, val):
     return anon.faker.decimal(field=field)
 
 
-def uk_postcode(anon, obj, field, val):
+def postcode(anon, obj, field, val):
     """
-    Generates a random UK postcode (not necessarily valid, but it will look like one).
+    Generates a random postcode (not necessarily valid, but it will look like one).
     """
-    return anon.faker.uk_postcode(field=field)
+    return anon.faker.postcode(field=field)
 
 
-def uk_country(anon, obj, field, val):
+def country(anon, obj, field, val):
     """
-    Returns a randomly selected country that is part of the UK
+    Returns a randomly selected country.
     """
-    return anon.faker.uk_country(field=field)
-
-
-def uk_county(anon, obj, field, val):
-    """
-    Returns a randomly selected county from the UK
-    """
-    return anon.faker.uk_county(field=field)
+    return anon.faker.country(field=field)
 
 
 def username(anon, obj, field, val):
     """
     Generates a random username
     """
-    return anon.faker.username(field=field)
+    return anon.faker.user_name(field=field)
 
 
 def first_name(anon, obj, field, val):
@@ -139,14 +132,14 @@ def full_address(anon, obj, field, val):
     Generates a random full address, using newline characters between the lines.
     Resembles a US address
     """
-    return anon.faker.full_address(field=field)
+    return anon.faker.address(field=field)
 
 
 def phonenumber(anon, obj, field, val):
     """
     Generates a random US-style phone number
     """
-    return anon.faker.phonenumber(field=field)
+    return anon.faker.phone_number(field=field)
 
 
 def street_address(anon, obj, field, val):
@@ -174,7 +167,7 @@ def zip_code(anon, obj, field, val):
     """
     Returns a randomly generated US zip code (not necessarily valid, but will look like one).
     """
-    return anon.faker.zip_code(field=field)
+    return anon.faker.zipcode(field=field)
 
 
 def company(anon, obj, field, val):
@@ -188,7 +181,7 @@ def lorem(anon, obj, field, val):
     """
     Generates a paragraph of lorem ipsum text
     """
-    return anon.faker.lorem(field=field)
+    return ' '.join(anon.faker.sentences(field=field))
 
 
 def unique_lorem(anon, obj, field, val):

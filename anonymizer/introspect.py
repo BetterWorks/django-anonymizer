@@ -30,9 +30,6 @@ charfield_replacers = [
     (r'(\b|_)email\d*', '"email"'),
     (r'(\b|_)town\d*', '"city"'),
     (r'(\b|_)city\d*', '"city"'),
-    (r'(\b|_)county\d*', '"uk_county"'),
-    (r'(\b|_)post_code\d*', '"uk_postcode"'),
-    (r'(\b|_)postcode\d*', '"uk_postcode"'),
     (r'(\b|_)zip\d*', '"zip_code"'),
     (r'(\b|_)zipcode\d*', '"zip_code"'),
     (r'(\b|_)zip_code\d*', '"zip_code"'),
@@ -97,17 +94,7 @@ class %(modelname)sAnonymizer(Anonymizer):
 
 def create_anonymizer(model):
     attributes = []
-    fields = list(model._meta.fields)
-    # For the faker.name/username/email magic to work as expected and produce
-    # consistent sets of names/email addreses, they must be accessed in the
-    # same order. This will usually not be a problem, but if duplicate names
-    # are produced and the field is unique=True, the logic in DjangoFaker for
-    # getting new values from the 'source' means that the order will become out
-    # of sync. To avoid this, we put fields with 'unique=True' at the beginning
-    # of the list. Usually this will only be the username.
-    fields.sort(key=lambda f: not getattr(f, 'unique', False))
-
-    for f in fields:
+    for f in model._meta.fields:
         replacer = get_replacer_for_field(f)
         attributes.append(attribute_template % {'attname': f.attname,
                                                 'replacer': replacer})
