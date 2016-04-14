@@ -124,7 +124,7 @@ def similar_email(anon, obj, field, val):
     """
     Generate a random email address using the same domain.
     """
-    return val if 'betterworks.com' in val else '@'.join([anon.faker.username(field=field), val.split('@')[-1]])
+    return val if 'betterworks.com' in val else '@'.join([anon.faker.user_name(field=field), val.split('@')[-1]])
 
 
 def full_address(anon, obj, field, val):

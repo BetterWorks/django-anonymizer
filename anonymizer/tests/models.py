@@ -35,6 +35,7 @@ class EverythingModel(models.Model):
     first_name = models.CharField(max_length=5)
     last_name = models.CharField(max_length=5)
     similar_email = models.EmailField()
+    similar_email_other = models.EmailField()
     phonenumber = models.CharField(max_length=10)
     last_name = models.CharField(max_length=11)
     street_address = models.CharField(max_length=15)
