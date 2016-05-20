@@ -1,3 +1,10 @@
+Version 0.5.1
+-------------
+
+* Added unicode compatibility for anonymizer.py files
+* Now with universal wheels
+* Added a new maintainer
+
 Version 0.5
 -----------
 * Python 3 compatibility
@@ -38,7 +45,6 @@ Version 0.1.2
   This breaks the previous signature of the function.
 * Introduced 'replacers' module and new shortcuts.
 
-
 Version 0.1.1
 -------------
 
@@ -49,5 +55,3 @@ Version 0.1
 -----------
 
 Initial release
-
-
