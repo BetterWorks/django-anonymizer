@@ -1,6 +1,6 @@
-==========================
- Django Anonymizer (Fork!)
-==========================
+==================
+ Django Anonymizer
+==================
 
 .. image:: https://travis-ci.org/BetterWorks/django-anonymizer.svg?branch=master
     :target: https://travis-ci.org/BetterWorks/django-anonymizer
@@ -8,7 +8,7 @@
 .. image:: https://codecov.io/github/BetterWorks/django-anonymizer/coverage.svg?branch=master
     :target: https://codecov.io/github/BetterWorks/django-anonymizer?branch=master
 
-This is a fork of https://bitbucket.org/spookylukey/django-anonymizer/
+This was originally a fork of https://bitbucket.org/spookylukey/django-anonymizer/
 
 Intro
 =====
