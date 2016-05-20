@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 # Pre-built replacers.
 
 varchar = lambda anon, obj, field, val: anon.faker.varchar(field=field)

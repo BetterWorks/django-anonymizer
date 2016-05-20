@@ -32,8 +32,9 @@ database'.
 An alternative approach to the problem of realistic amounts of test data for
 development/tests is to populate a database from scratch - see `django-poseur
 <https://github.com/alliterativeanimal/django-poseur>`_, `django-mockups
-<https://github.com/sorl/django-mockups>`_ and `django-autofixture
-<https://github.com/gregmuellegger/django-autofixture>`_. The disavantage of
+<https://github.com/sorl/django-mockups>`_, `django-eadred
+<https://github.com/willkg/django-eadred>`_ and `django-autofixture
+<https://github.com/gregmuellegger/django-autofixture>`_.  The disavantage of
 that method is that the structure of the data - in terms of related models - can
 be unrealistic.
 
@@ -80,4 +81,8 @@ Tests
 To run the test suite, do the following inside the folder containing this
 README::
 
-    django-admin.py test --settings=anonymizer.test_settings
+  ./manage.py test anonymizers
+
+or::
+
+  ./manage.py test anonymizers.tests

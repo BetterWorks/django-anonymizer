@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from datetime import datetime
 import decimal
 import random
@@ -48,7 +50,7 @@ class DjangoFaker(object):
         if unique:
             self._prep_init(field)
             used = self.init_values[field]
-            for i in xrange(0, 10):
+            for i in range(0, 10):
                 if retval in used:
                     retval = source()
                 else:
@@ -75,7 +77,7 @@ class DjangoFaker(object):
         max_length = field.max_length
         def source():
             length = random.choice(range(0, max_length + 1))
-            return "".join(random.choice(general_chars) for i in xrange(length))
+            return "".join(random.choice(general_chars) for i in range(length))
         return self.get_allowed_value(source, field)
 
     def simple_pattern(self, pattern, field=None):

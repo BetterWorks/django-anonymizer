@@ -63,7 +63,7 @@ class TestAnonymizer(TestCase):
 
     def setUp(self):
         self.o1 = test_models.Other.objects.create()
-        for x in xrange(0, self.NUM_ITEMS):
+        for x in range(0, self.NUM_ITEMS):
             d = datetime.now() + timedelta(365*x)
             test_models.EverythingModel.objects.create(o1=self.o1,
                                                        username="intial%d" % x,

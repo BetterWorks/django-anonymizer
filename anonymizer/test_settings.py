@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 
 DATABASES = {
     'default': {
@@ -10,3 +11,4 @@ INSTALLED_APPS = [
     'anonymizer.tests',
 ]
 
+SECRET_KEY = "x"

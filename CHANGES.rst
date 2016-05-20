@@ -1,3 +1,7 @@
+Version 0.5
+-----------
+* Python 3 compatibility
+
 Version 0.4
 -----------
 

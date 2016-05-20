@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import re
 
 from django.db.models import EmailField
@@ -34,6 +36,7 @@ charfield_replacers = [
     (r'(\b|_)county\d*', '"uk_county"'),
     (r'(\b|_)post_code\d*', '"uk_postcode"'),
     (r'(\b|_)postcode\d*', '"uk_postcode"'),
+    (r'(\b|_)postal_code\d*', '"uk_postcode"'),
     (r'(\b|_)zip\d*', '"zip_code"'),
     (r'(\b|_)zipcode\d*', '"zip_code"'),
     (r'(\b|_)zip_code\d*', '"zip_code"'),
@@ -43,6 +46,7 @@ charfield_replacers = [
     (r'(\b|_)tel\d*\b', '"phonenumber"'),
     (r'(\b|_)state\d*\b', '"state"'),
     (r'(\b|_)address\d*', '"full_address"'),
+    (r'(\b|_)street\d*', '"street_address"'),
 ]
 
 def get_replacer_for_field(field):
