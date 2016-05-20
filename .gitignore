@@ -3,3 +3,5 @@
 /.tox
 /*.egg-info
 /.coverage
+/build
+/dist
