@@ -7,7 +7,9 @@ from uuid import uuid4
 
 import six
 from anonymizer import replacers
+from django.conf import settings
 from django.db import connection, transaction
+from django.utils.timezone import get_default_timezone
 from faker import Faker
 
 from six.moves import xrange
@@ -119,11 +121,15 @@ class DjangoFaker(object):
         """
         if val is None:
             def source():
-                return datetime.fromtimestamp(randrange(1, 2100000000))
+                tzinfo = get_default_timezone() if settings.USE_TZ else None
+                return datetime.fromtimestamp(randrange(1, 2100000000),
+                                              tzinfo)
         else:
             def source():
+                tzinfo = get_default_timezone() if settings.USE_TZ else None
                 return datetime.fromtimestamp(int(val.strftime("%s")) +
-                                              randrange(-365*24*3600*2, 365*24*3600*2))
+                                              randrange(-365*24*3600*2, 365*24*3600*2),
+                                              tzinfo)
         return self.get_allowed_value(source, field)
 
     def date(self, field=None, val=None):
