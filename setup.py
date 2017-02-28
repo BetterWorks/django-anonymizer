@@ -40,7 +40,7 @@ setup(
         "Topic :: Database"
         ],
     install_requires=[
-        'fake-factory >= 0.5.6',
+        'Faker >= 0.7.7',
         'django >= 1.8.0',
         'six >= 1.10.0'],
 )
