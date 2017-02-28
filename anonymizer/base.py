@@ -303,6 +303,9 @@ class Anonymizer(object):
     def run(self, chunksize=2000, parallel=4):
         self.validate()
 
+        if not self.create_replacer_attributes():
+            return
+
         chunks = self.get_queryset_chunk_iterator(chunksize)
 
         if parallel == 0:
