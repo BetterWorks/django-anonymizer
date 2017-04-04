@@ -80,6 +80,7 @@ def get_replacer_for_field(field):
 
     return r
 
+
 attribute_template = "        ('%(attname)s', %(replacer)s),"
 class_template = """
 class %(modelname)sAnonymizer(Anonymizer):
