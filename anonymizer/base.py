@@ -303,6 +303,9 @@ class Anonymizer(object):
     def run(self, chunksize=2000, parallel=4):
         self.validate()
 
+        if not self.create_replacer_attributes():
+            return
+
         chunks = self.get_queryset_chunk_iterator(chunksize)
 
         if parallel == 0:
@@ -337,12 +340,10 @@ class Anonymizer(object):
         return tuple(name for name, replacer in self.get_attributes() if replacer != 'SKIP')
 
     def create_query(self, replacer_attrs):
-        query = 'UPDATE %s SET ' % self.model._meta.db_table
-        for attr in replacer_attrs:
-            query += '%s = ?, ' % attr
-        query = query[:-2] + ' where %s = ?' % self.model._meta.pk.column
-        # django expects %s, not ?, but we use %s to generate the query
-        return query.replace('?', '%s')
+        return 'UPDATE %s SET %s WHERE %s = %%s' % (
+            self.model._meta.db_table,
+            ', '.join('%s = %%s' % attr for attr in replacer_attrs),
+            self.model._meta.pk.column)
 
     def create_query_args(self, updates, replacer_attrs):
         pk_field = self.model._meta.pk
