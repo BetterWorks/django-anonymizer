@@ -3,6 +3,11 @@ from django.core.management.base import AppCommand
 
 from anonymizer.utils import get_anonymizers
 
+try:
+    unicode
+except NameError:
+    unicode = str  # python 3
+
 
 class Command(AppCommand):
 
