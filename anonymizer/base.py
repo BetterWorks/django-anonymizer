@@ -247,6 +247,13 @@ class Anonymizer(object):
 
     faker = DjangoFaker()
 
+    def __init__(self):
+        super(Anonymizer, self).__init__()
+
+        assert self.attributes is not None, '"attributes" attribute must be set'
+        assert self.model is not None, '"model" attribute must be set'
+
+
     def get_queryset(self):
         """
         Returns the QuerySet to be manipulated
@@ -267,19 +274,13 @@ class Anonymizer(object):
             yield queryset[index:index + chunksize]
             index += chunksize
 
-    def get_attributes(self):
-        if self.attributes is None:
-            raise Exception("'attributes' attribute must be set")
-        return self.attributes
-
     def alter_object(self, obj):
         """
         Alters all the attributes in an individual object.
 
         If it returns False, the object will not be saved
         """
-        attributes = self.get_attributes()
-        for attname, replacer in attributes:
+        for attname, replacer in self.attributes:
             if replacer == "SKIP":
                 continue
             self.alter_object_attribute(obj, attname, replacer)
@@ -322,9 +323,8 @@ class Anonymizer(object):
             pool.join()
 
     def validate(self):
-        attributes = self.get_attributes()
         model_attrs = set(f.attname for f in self.model._meta.fields)
-        given_attrs = set(name for name, replacer in attributes)
+        given_attrs = set(name for name, replacer in self.attributes)
         if model_attrs != given_attrs:
             msg = ""
             missing_attrs = model_attrs - given_attrs
@@ -337,7 +337,7 @@ class Anonymizer(object):
             raise ValueError("The attributes list for %s does not match the complete list of fields for that model. %s" % (self.model.__name__, msg))
 
     def create_replacer_attributes(self):
-        return tuple(name for name, replacer in self.get_attributes() if replacer != 'SKIP')
+        return tuple(name for name, replacer in self.attributes if replacer != 'SKIP')
 
     def create_query(self, replacer_attrs):
         return 'UPDATE %s SET %s WHERE %s = %%s' % (
