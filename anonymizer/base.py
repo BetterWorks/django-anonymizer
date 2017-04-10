@@ -289,7 +289,7 @@ class Anonymizer(object):
         Alters a single attribute in an object.
         """
         currentval = getattr(obj, attname)
-        field = obj._meta.get_field(attname)
+        field = self.model._meta.get_field(attname)
         if isinstance(replacer, six.string_types):
             # 'email' is shortcut for: replacers.email
             replacer = getattr(replacers, replacer)
