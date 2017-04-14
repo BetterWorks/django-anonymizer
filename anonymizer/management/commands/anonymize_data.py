@@ -4,7 +4,6 @@ anonymize_data command
 
 from __future__ import print_function
 
-import sys
 import time
 
 from django.core.management.base import AppCommand
@@ -32,10 +31,10 @@ class Command(AppCommand):
             instances.append(instance)
 
         for instance in instances:
-            print('Running %s.%s... ' % (instance.__class__.__module__,
-                                         instance.__class__.__name__), end='')
-            sys.stdout.flush()
+            self.stdout.write('Running %s.%s... ' % (instance.__class__.__module__,
+                                                     instance.__class__.__name__), ending='')
+            self.stdout.flush()
             start = time.time()
             instance.run(chunksize=chunksize, parallel=parallel)
             duration = time.time() - start
-            print('took %0.2f seconds' % duration)
+            self.stdout.write('took %0.2f seconds' % duration)
