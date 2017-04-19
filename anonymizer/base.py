@@ -136,8 +136,7 @@ class DjangoFaker(object):
         """
         Like datetime, but truncated to be a date only
         """
-        d = self.datetime(field=field, val=val)
-        return d.date()
+        return self.datetime(field=field, val=val).date()
 
     def decimal(self, field=None, val=None):
         def source():
@@ -156,6 +155,9 @@ class DjangoFaker(object):
         be the same length as the original text, and with the same pattern of
         line breaks.
         """
+        if val == '':
+            return ''
+
         if val is not None:
             def generate(length):
                 # Get lorem ipsum of a specific length.
@@ -230,6 +232,7 @@ class Anonymizer(object):
     """
 
     model = None
+
     # attributes is a dictionary of {attribute_name: replacer}, where replacer is
     # a callable that takes as arguments this Anonymizer instance, the object to
     # be altered, the field to be altered, and the current field value, and
@@ -238,7 +241,6 @@ class Anonymizer(object):
     # This signature is designed to be useful for making lambdas that call the
     # 'faker' instance provided on this class, but it can be used with any
     # function.
-
     attributes = None
 
     # To impose an order on Anonymizers within a module, this can be set - lower
@@ -247,16 +249,33 @@ class Anonymizer(object):
 
     faker = DjangoFaker()
 
+    def __init__(self):
+        super(Anonymizer, self).__init__()
+
+        assert self.attributes is not None, '"attributes" attribute must be set'
+        assert self.model is not None, '"model" attribute must be set'
+
+        self.replacers = []
+        for attname, replacer in self.attributes:
+            if replacer == 'SKIP':
+                continue
+
+            if isinstance(replacer, six.string_types):
+                # 'email' is shortcut for: replacers.email
+                replacer = getattr(replacers, replacer)
+            elif not callable(replacer):
+                raise Exception("Expected callable or string to be passed, got %r." % replacer)
+
+            field = self.model._meta.get_field(attname)
+            self.replacers.append((attname, field, replacer))
+
     def get_queryset(self):
         """
         Returns the QuerySet to be manipulated
         """
-        if self.model is None:
-            raise Exception("'model' attribute must be set")
-        qs = (self.model._default_manager.get_queryset()
-                                         .select_related(None)
-                                         .order_by('pk'))
-        return qs
+        return (self.model._default_manager.get_queryset()
+                                           .select_related(None)
+                                           .order_by('pk'))
 
     def get_queryset_chunk_iterator(self, chunksize):
         queryset = self.get_queryset()
@@ -267,43 +286,21 @@ class Anonymizer(object):
             yield queryset[index:index + chunksize]
             index += chunksize
 
-    def get_attributes(self):
-        if self.attributes is None:
-            raise Exception("'attributes' attribute must be set")
-        return self.attributes
-
     def alter_object(self, obj):
         """
         Alters all the attributes in an individual object.
 
         If it returns False, the object will not be saved
         """
-        attributes = self.get_attributes()
-        for attname, replacer in attributes:
-            if replacer == "SKIP":
-                continue
-            self.alter_object_attribute(obj, attname, replacer)
-
-    def alter_object_attribute(self, obj, attname, replacer):
-        """
-        Alters a single attribute in an object.
-        """
-        currentval = getattr(obj, attname)
-        field = obj._meta.get_field(attname)
-        if isinstance(replacer, six.string_types):
-            # 'email' is shortcut for: replacers.email
-            replacer = getattr(replacers, replacer)
-        elif not callable(replacer):
-            raise Exception("Expected callable or string to be passed, got %r." % replacer)
-
-        replacement = replacer(self, obj, field, currentval)
-
-        setattr(obj, attname, replacement)
+        for attname, field, replacer in self.replacers:
+            currentval = getattr(obj, attname)
+            replacement = replacer(self, obj, field, currentval)
+            setattr(obj, attname, replacement)
 
     def run(self, chunksize=2000, parallel=4):
         self.validate()
 
-        if not self.create_replacer_attributes():
+        if not self.replacers:
             return
 
         chunks = self.get_queryset_chunk_iterator(chunksize)
@@ -322,9 +319,8 @@ class Anonymizer(object):
             pool.join()
 
     def validate(self):
-        attributes = self.get_attributes()
         model_attrs = set(f.attname for f in self.model._meta.fields)
-        given_attrs = set(name for name, replacer in attributes)
+        given_attrs = set(name for name, replacer in self.attributes)
         if model_attrs != given_attrs:
             msg = ""
             missing_attrs = model_attrs - given_attrs
@@ -335,9 +331,6 @@ class Anonymizer(object):
             if extra_attrs:
                 msg += "The following non-existent fields were supplied: %s." % ", ".join(extra_attrs)
             raise ValueError("The attributes list for %s does not match the complete list of fields for that model. %s" % (self.model.__name__, msg))
-
-    def create_replacer_attributes(self):
-        return tuple(name for name, replacer in self.get_attributes() if replacer != 'SKIP')
 
     def create_query(self, replacer_attrs):
         return 'UPDATE %s SET %s WHERE %s = %%s' % (
@@ -363,7 +356,7 @@ class Anonymizer(object):
 
 def _run(anonymizer, objs):
     values = {}
-    replacer_attr = anonymizer.create_replacer_attributes()
+    replacer_attr = tuple(r[0] for r in anonymizer.replacers)
     for obj in objs.iterator():
         retval = anonymizer.alter_object(obj)
         if retval is False:

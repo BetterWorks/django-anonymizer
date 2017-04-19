@@ -2,6 +2,10 @@
 anonymize_data command
 """
 
+from __future__ import print_function
+
+import time
+
 from django.core.management.base import AppCommand
 
 from anonymizer.utils import get_anonymizers
@@ -27,4 +31,10 @@ class Command(AppCommand):
             instances.append(instance)
 
         for instance in instances:
+            self.stdout.write('Running %s.%s... ' % (instance.__class__.__module__,
+                                                     instance.__class__.__name__), ending='')
+            self.stdout.flush()
+            start = time.time()
             instance.run(chunksize=chunksize, parallel=parallel)
+            duration = time.time() - start
+            self.stdout.write('took %0.2f seconds' % duration)
