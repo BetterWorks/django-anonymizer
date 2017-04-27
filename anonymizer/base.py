@@ -77,17 +77,26 @@ class DjangoFaker(object):
         # bypass chopping from max_length
         return str(uuid4())
 
-    def varchar(self, field=None):
+    def varchar(self, field=None, val=None):
         """
         Returns a chunk of text, of maximum length 'max_length'
         """
-        assert field is not None, "The field parameter must be passed to the 'varchar' method."
-        max_length = field.max_length
+        max_length = getattr(field, 'max_length')
+        if max_length is None:
+            max_length = 255
 
         def source():
-            length = random.choice(range(1, max_length + 1))
+            if val is not None:
+                length = random.randint(1, max_length)
+            else:
+                length = len(val)
+
             return "".join(random.choice(general_chars) for i in xrange(length))
-        return self.get_allowed_value(source, field)
+
+        if field is not None:
+            return self.get_allowed_value(source, field)
+        else:
+            return source()
 
     def simple_pattern(self, pattern, field=None):
         """
