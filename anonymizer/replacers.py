@@ -12,7 +12,7 @@ def varchar(anon, obj, field, val):
     """
     Returns random data for a varchar field.
     """
-    return anon.faker.varchar(field=field)
+    return anon.faker.varchar()
 
 
 def bool(anon, obj, field, val):
@@ -212,6 +212,13 @@ def similar_lorem(anon, obj, field, val):
     'yes' or 'no'), this could easily fail to hide the original data.
     """
     return anon.faker.lorem(field=field, val=val)
+
+
+def similar_varchar(anon, obj, field, val):
+    """
+    Returns random data of the same length as val
+    """
+    return anon.faker.similar_varchar(field=field, val=val)
 
 
 def choice(anon, obj, field, val):
