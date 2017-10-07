@@ -84,6 +84,9 @@ class DjangoFaker(object):
         assert field is not None, "The field parameter must be passed to the 'varchar' method."
         max_length = field.max_length
 
+        if not max_length:
+            return ''
+
         def source():
             length = random.choice(range(1, max_length + 1))
             return "".join(random.choice(general_chars) for i in xrange(length))
