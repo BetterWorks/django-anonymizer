@@ -17,6 +17,7 @@ class EverythingModel(models.Model):
     similar_lorem = models.TextField()
     unique_lorem = models.TextField(unique=True)
     some_varchar = models.CharField(max_length=5)
+    no_varchar = models.CharField()
     birthday = models.DateTimeField()
     age = models.PositiveSmallIntegerField()
     icon = models.ImageField(upload_to='.')
