@@ -64,7 +64,7 @@ class DjangoFaker(object):
 
             if retval in used:
                 raise Exception("Cannot generate unique data for field %s. Last value tried %s" % (field, retval))
-            used.add(retval)
+            self.init_values[field].add(retval)
 
         # Enforce max_length
         max_length = getattr(field, 'max_length', None)
